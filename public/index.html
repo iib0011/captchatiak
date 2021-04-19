@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Captcha</title>
+</head>
+<body>
+    <p style="text-align: center; font-size: 1.2em;">Veuillez compléter le captcha</p>
+    <button id="continue-btn" style="display:none">Continuer vers l'application</button>
+
+    <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-auth.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+    apiKey: "AIzaSyA80FNo6-kd3D_snrJ_JaTcskroRL8771w",
+    authDomain: "tiak-ea1b9.firebaseapp.com",
+    databaseURL: "https://tiak-ea1b9.firebaseio.com",
+    projectId: "tiak-ea1b9",
+    storageBucket: "tiak-ea1b9.appspot.com",
+    messagingSenderId: "443234427856",
+    appId: "1:443234427856:web:342cd615f698ffa82d4fd5",
+    measurementId: "G-TL48XP9XF2"
+      };
+      firebase.initializeApp(config);
+    </script>    <script>
+        function getToken(callback) {
+            var container = document.createElement('div');
+            container.id = 'captcha';
+            document.body.appendChild(container);
+            var captcha = new firebase.auth.RecaptchaVerifier('captcha', {
+                'size': 'normal',
+                'callback': function(token) {
+                    callback(token);
+                },
+                'expired-callback': function() {
+                    callback('');
+                }
+            });
+            captcha.render().then(function() {
+                captcha.verify();
+            });
+        }
+        function sendTokenToApp(token) {
+            var baseUri = decodeURIComponent(location.search.replace(/^\?appurl\=/, ''));
+            const finalUrl = location.href = baseUri + '/?token=' + encodeURIComponent(token);
+            const continueBtn = document.querySelector('#continue-btn');
+            console.log(finalUrl);
+            // continueBtn.onclick = (event)=>{
+            //     window.open(finalUrl,'_blank')
+            // }
+            continueBtn.style.display = "block";
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            getToken(sendTokenToApp);
+        });
+    </script>
+</body>
+</html>
